@@ -29,7 +29,7 @@
 # To get started
 # 1) Create a subdomain zone in Route53 for your dynamic dns.
 #    Because IAM (AWS Integrated Access Management) controls access per-zone not per record,
-#    I recommend that you create a subdomain zone just for your dynamic dns.
+#    It is recommended that you create a subdomain zone just for your dynamic dns.
 #    If the credentials you use in this script only allow access to a subdomain zone,
 #    your main DNS zone could not be compromised if the credentials from the script were exposed.
 #
@@ -65,12 +65,16 @@
 ###############################################################
 # Your Variables
 ## This top section must be configured for the script to work
+## Be very cautious embedding AWS Credentials in a script.
+## In the setup steps, you should have created a special IAM account with no password
+## and access to modify only the one delegated subdomain Route53 zone.
+## Do not ever post code with your keys to public repostitories.
 aws_region = "us-east-1"  
 access_key = "<yourkey>"  # AWS IAM Credential
 secret_access_key = "<your secret key>"  # AWS IAM Credential
 route_53_zone_id = "<your zone id>"  # the Route53 Zone you created for the script
 route_53_record_name = "baz.bar.foo.com."  # The name of the record to modify
-route_53_record_ttl = 60 # record TTL
+route_53_record_ttl = 60 # record TTL (Time To Live) in seconds tells DNS servers how to cache the record.
 
 ###############################################################
 # Advanced Options
@@ -153,7 +157,8 @@ if route53ManagementMode == "boto3Mode" :
 ###############################################################
 
 ###############################################################
-# define our exit functions
+# define exit functions
+# could be expanded to use logging, send SNS notifications etc
 def exitError(errorText):
     print errorText
     quit()
