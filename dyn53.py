@@ -2,17 +2,30 @@
 # Dynamic DNS Script for AWS Route53
 # Sean Greathouse 11/2015
 
-# The script has several modes.
-# The default uses all python, boto3 to communicate with Route53 and dnspython for dns lookups
+# Most consumer grade internet connections have a public IP address that can change over time.
+# In order to reliably connect from the internet to hosts and resources on a network that lack
+# a dedicated static public IP, you employ 'Dynamic DNS'.
+# Dynamic DNS uses a software agent on the private network that can detect changes to the
+# public IP address and update a public DNS entry accordingly.
+# Use cases involve hosting your own web or email server, or gaining remote access back to your home network over the internet.
+# There are both commercial/freemium services and other examples of scripting against Route53.
+# 
+# At its core, the script determines the current public IP of the network, checks the current DNS record
+# then changes the DNS record if the two addresses don't match.
+#
+# The script can use several methods to accomplish these tasks, so it can be adapted to different OSes and scenarios.
+# Currently it has been tested on Linux, OSX, and the Tomato USB open router firmware distribution.
+# The default mode uses all Python and should work on Windows.
+# It should also work on the linux based DD-WRT router firmware distribution.
+# 
+# The default uses all python, boto3 to communicate with Route53 and dnspython for to discover the current public IP.
 # Default mode requires:
 # aws python sdk (aka boto3) 
 # to install: pip install boto3
 # dnspython
 # to install: pip install dnspython
+#
 # see 'Advanced Options' instructions below for other modes
-# the script has been tested on OSX and Linux
-# with the default settings, it should work on Windows 
-# with python installed and included in the path
 
 # To get started
 # 1) Create a subdomain zone in Route53 for your dynamic dns (optional)
@@ -33,10 +46,18 @@
 #    Name: bar.foo.com
 #    Type: NS
 #    Value:  <paste the four ns records from the bar.foo.com zone>
+#
+#    You have now delegated any records for <anyrecord>.bar.foo.com to this new zone.
+#    If you want records in the main domain to take advantage of dynamic DNS you can create
+#    cname reocrds from the main domain.
+#    Dynamic hostname home.bar.foo.com
+#    cname www.foo.com to home.bar.foo.com 
+
 # 
 # 2) Create an IAM user in AWS just for this script
-#    The user does not need to have a password, just a Access Key & Secret Access Key pair.
+#    The user does not need to have a password, just an Access Key & Secret Access Key pair.
 #    Create an IAM policy to allow the user to read and write a single Route53 zone.
+#    Attach the policy to your new IAM user.
 #    The policy you need is in the 'IAM Policy' section at the end of this file.
 #    Remember to paste the zone ID for the zone you just created into the IAM policy.
 #
