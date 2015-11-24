@@ -8,7 +8,6 @@
 # Dynamic DNS uses a software agent on the private network that can detect changes to the
 # public IP address and update a public DNS entry accordingly.
 # Use cases involve hosting your own web or email server, or gaining remote access back to your home network over the internet.
-# There are both commercial/freemium services and other examples of scripting against Route53.
 # 
 # At its core, the script determines the current public IP of the network, checks the current DNS record
 # then changes the DNS record if the two addresses don't match.
@@ -28,7 +27,7 @@
 # see 'Advanced Options' instructions below for other modes
 
 # To get started
-# 1) Create a subdomain zone in Route53 for your dynamic dns (optional)
+# 1) Create a subdomain zone in Route53 for your dynamic dns.
 #    Because IAM (AWS Integrated Access Management) controls access per-zone not per record,
 #    I recommend that you create a subdomain zone just for your dynamic dns.
 #    If the credentials you use in this script only allow access to a subdomain zone,
@@ -49,7 +48,7 @@
 #
 #    You have now delegated any records for <anyrecord>.bar.foo.com to this new zone.
 #    If you want records in the main domain to take advantage of dynamic DNS you can create
-#    cname reocrds from the main domain.
+#    cname records from the main domain.
 #    Dynamic hostname home.bar.foo.com
 #    cname www.foo.com to home.bar.foo.com 
 
