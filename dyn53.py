@@ -201,6 +201,8 @@ def buildJsonFile(subPublicIp):
 # Script Logic
 ###############################################################
 # Find the current public IP
+# These conditionals are controlled by (and documented in) the config section at the top of the script.
+#
 if publicIpMode == "localInterface":
     bashIfconfig = "ifconfig %s" % ethernet_interface
     publicIpProcess = subprocess.Popen(bashIfconfig.split(), shell=False, env=myEnv, stdout=subprocess.PIPE)
@@ -227,7 +229,7 @@ elif publicIpMode == "queryOpenDns":
 ###############################################################
 # Find the IP associated with our current Route53 DNS record
 # First declare the variable in case no record yet exists in route53.
-currentRoute53Ip = "" 
+currentRoute53Ip = ""  # clear the variable
 
 if route53ManagementMode == "awsCliMode" :
     # Call the aws cli and parse the ouput
@@ -243,13 +245,16 @@ if route53ManagementMode == "awsCliMode" :
                 currentRoute53Ip = eachSubRecord['Value']
                 print currentRoute53Ip
 
-elif route53ManagementMode == "boto3Mode" :          
+elif route53ManagementMode == "boto3Mode" :  
+    # use boto to find the currently configured IP
     currentRoute53RecordSet = route53client.list_resource_record_sets(
         HostedZoneId=route_53_zone_id ,
         StartRecordName=route_53_record_name ,
         StartRecordType=route_53_record_type ,
         MaxItems='1'
     )
+    # parse the records and look for the correct match
+    # errors if there is more than a single value for the configured record
     for eachRecord in currentRoute53RecordSet['ResourceRecordSets']:
         if eachRecord['Name'] == route_53_record_name :
             if len(eachRecord['ResourceRecords']) > 1 :
